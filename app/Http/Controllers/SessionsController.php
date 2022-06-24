@@ -14,14 +14,17 @@ class SessionsController extends Controller
             'email' => ['required'],
             'password' => ['required']
         ]);
-        if (auth()->attempt($attributes)) {
-            return redirect('/')->with('success', 'Successfully Logged In');
-        }
+        
         // Return back with error if login fails
-        return back()
-            ->withInput()
-            ->withErrors(['password' => 'Log in attempt failed']);
+        if (!auth()->attempt($attributes)) {
+            return back()
+                ->withInput()
+                ->withErrors(['password' => 'Log in attempt failed']);
+        }
+        
+        session()->regenerate();
 
+        return redirect('/')->with('success', 'Successfully Logged In');
     }
     public function destroy()
     {
